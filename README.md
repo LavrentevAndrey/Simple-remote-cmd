@@ -6,4 +6,5 @@
 ## Starting
 - Litteraly (in correct order):
   - ./server
-  - ./client
+  - ./client <ip addr>
+- ip addr - 127.0.0.1 or other ip interface on local machine 
