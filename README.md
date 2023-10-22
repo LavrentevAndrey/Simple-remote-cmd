@@ -1,8 +1,8 @@
 # client_server_cmd_local
 ## Building
-- All libs are linked automaticly therefor you only need to simply compile *.c
-  - gcc client.c -o client
-  - gcc server.c -o server
+- All libs are linked automaticly with msvc. If you want to use gcc you need to manualy link lib
+  - gcc -Wextra -Wall client.c -lWs2_32 -o client
+  - gcc -Wextra -Wall -lWs2_32 server.c -o server
 ## Starting
 - Litteraly (in correct order):
   - ./server
