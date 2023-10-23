@@ -112,7 +112,7 @@ int __cdecl main(void)
         ErrorExit(TEXT("Stdin SetHandleInformation")); 
  
     // Create the child process. 
-    CreateChildProcess(g_hChildStd_OUT_Wr, g_hChildStd_IN_Rd);
+    CreateChildProcess();
 
     // No longer need server socket
     closesocket(ListenSocket); // 
@@ -125,9 +125,11 @@ int __cdecl main(void)
     do {
         // Получаем данные по сокету и записываем в буфер
         iResult = Recv(ClientSocket, recvbuf, DEFAULT_BUFSIZE, 0);
+        printf("\nRESIVED buf: %s\n", recvbuf);
         if (strcmp(recvbuf, INET_EXIT_STR) == 0)
             strcpy_s(sendbuf, sizeof(INET_EXIT_STR_OK), INET_EXIT_STR_OK);
         else {
+            strcpy_s(sendbuf, DEFAULT_BUFSIZE, recvbuf); // Копирую принимающий буфер в отправляющий
             WriteToPipe(sendbuf); //sending command to console
             ReadFromPipe(sendbuf); //reading console output
         }
@@ -143,6 +145,10 @@ int __cdecl main(void)
         return 1;
     }
 
+    if ( ! CloseHandle(g_hChildStd_IN_Wr) ) 
+        ErrorExit(TEXT("StdInWr CloseHandle\n"));
+    if ( ! CloseHandle(g_hChildStd_IN_Rd) ) 
+        ErrorExit(TEXT("StdInRD CloseHandle\n"));
     // cleanup
     closesocket(ClientSocket);
     WSACleanup();
@@ -209,19 +215,18 @@ void WriteToPipe(CHAR chBuf[DEFAULT_BUFSIZE])
 // Read from a file and write its contents to the pipe for the child's STDIN.
 // Stop when there is no more data. 
 { 
-   DWORD dwRead = 0, dwWritten;
+   DWORD dwWritten = 0;
    BOOL bSuccess = FALSE;
-   printf("\nchBuf: %s\nHandle: %p", chBuf, g_hChildStd_IN_Wr);
+   printf("\nchBuf: %s\nHandle: %p\n", chBuf, g_hChildStd_IN_Wr);
    bSuccess = WriteFile(g_hChildStd_IN_Wr, chBuf, DEFAULT_BUFSIZE, &dwWritten, NULL);
-   if ( ! bSuccess || dwRead == 0 )
+   printf("bSuccess: %d\tdwRead: %lu\n", bSuccess, dwWritten);
+   if ( ! bSuccess || dwWritten == 0 )
       printf("\nSomthing went wrong in sendig data to pipe\n");
    else
       printf( "\n->Contents of {%s} written to child STDIN pipe.\n", chBuf);
- 
-// Close the pipe handle so the child process stops reading. 
- 
-   if ( ! CloseHandle(g_hChildStd_IN_Wr) ) 
-      ErrorExit(TEXT("StdInWr CloseHandle")); 
+    // Close the pipe handle so the child process stops reading. 
+    if ( ! CloseHandle(g_hChildStd_IN_Wr) ) 
+        ErrorExit(TEXT("StdInWr CloseHandle\n"));
 } 
  
 void ReadFromPipe(CHAR chBuf[DEFAULT_BUFSIZE]) 

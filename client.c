@@ -71,9 +71,16 @@ int __cdecl main(int argc, char** argv) {
         for (int i = 0; ; ++i) { // Считывание символов с клавиатуры
             unsigned char c = (unsigned char)_getch();
             sendbuf[i] = c;
+            if (i == DEFAULT_BUFLEN - 3) {
+                sendbuf[i + 1] = '\n';
+                sendbuf[i + 1] = '\0';
+                printf("\nNOTE: Reached max length of bufer\n");
+                break;
+            }
             if (c == '\r') { // Перенос строки
                 printf("\n");
-                sendbuf[i] = '\0';
+                sendbuf[i] = '\n';
+                sendbuf[i + 1] = '\0';
                 break;
             }
             else if(c == '\b' && i > 0) { // Delete 
@@ -83,17 +90,12 @@ int __cdecl main(int argc, char** argv) {
                 printf("\n%s", sendbuf);
                 continue;
             }
-            if (i == DEFAULT_BUFLEN - 2) {
-                sendbuf[i + 1] = '\0';
-                printf("\nNOTE: Reached max length of bufer\n");
-                break;
-            }
             printf("%c", c);
         }
         Send(ConnectSocket, sendbuf, DEFAULT_BUFLEN, 0); // Обмен данными по подключённому сокету
         // Получаем данные по сокету и записываем в буфер
         iResult = Recv(ConnectSocket, recvbuf, DEFAULT_BUFLEN, 0);
-        printf("%s\n", recvbuf);
+        printf("\n%s", recvbuf);
     } while (iResult > 0 && (strcmp(recvbuf, INET_EXIT_STR) != 0)); // работаем пока сервер не подтвердит выход
 
     // shutdown the connection since no more data will be sent
