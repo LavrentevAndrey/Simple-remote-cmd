@@ -10,17 +10,17 @@
 
 
 // Need to link with Ws2_32.lib, Mswsock.lib, and Advapi32.lib
+#if defined(_MSC_VER) || defined(__BORLANDC__)
 #pragma comment (lib, "Ws2_32.lib")
 #pragma comment (lib, "Mswsock.lib")
 #pragma comment (lib, "AdvApi32.lib")
+#endif
 
-
-#define DEFAULT_BUFLEN 512
+#define DEFAULT_BUFLEN 4096
 #define DEFAULT_PORT "29015"
 #define INET_EXIT_STR "exit_ok"
 
-int __cdecl main(int argc, char** argv)
-{
+int __cdecl main(int argc, char** argv) {
     WSADATA wsaData; // Метаданные сетевых возможностей
     SOCKET ConnectSocket = INVALID_SOCKET;
     struct addrinfo* result = NULL,
@@ -29,7 +29,6 @@ int __cdecl main(int argc, char** argv)
     char sendbuf[DEFAULT_BUFLEN];
     char recvbuf[DEFAULT_BUFLEN];
     int iResult;
-    int recvbuflen = DEFAULT_BUFLEN;
 
     // Validate the parameters
     if (argc != 2) {
@@ -80,7 +79,8 @@ int __cdecl main(int argc, char** argv)
             else if(c == '\b' && i > 0) { // Delete 
                 sendbuf[i] = '\0';
                 sendbuf[i - 1] = '\0';
-                i--;
+                i -= 2;
+                printf("\n%s", sendbuf);
                 continue;
             }
             if (i == DEFAULT_BUFLEN - 2) {
@@ -108,6 +108,5 @@ int __cdecl main(int argc, char** argv)
     // cleanup
     closesocket(ConnectSocket);
     WSACleanup();
-
     return 0;
 }

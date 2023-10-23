@@ -11,7 +11,7 @@
 
 void Check_Socket(SOCKET s) {
     if (s == INVALID_SOCKET) {
-        printf("socket failed with error: %ld\n", WSAGetLastError());
+        printf("socket failed with error: %d\n", WSAGetLastError());
         WSACleanup();
         exit(1);
     }
@@ -19,13 +19,13 @@ void Check_Socket(SOCKET s) {
 
 SOCKET Socket(int af, int type, int protocol) {
     SOCKET ConnectSocket = INVALID_SOCKET;
-    ConnectSocket = socket(af, type, protocol); // Создание сокета
+    ConnectSocket = socket(af, type, protocol); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
     Check_Socket(ConnectSocket);
     return ConnectSocket;
 }
 
-int Connect(SOCKET* s, const sockaddr* name, int namelen) {
-    int iResult = connect(*s, name, namelen); // Подключаемся по сокету
+int Connect(SOCKET* s, const SOCKADDR* name, int namelen) {
+    int iResult = connect(*s, name, namelen); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
     if (iResult == SOCKET_ERROR) {
         closesocket(*s);
         *s = INVALID_SOCKET;
@@ -34,14 +34,14 @@ int Connect(SOCKET* s, const sockaddr* name, int namelen) {
 }
 
 void Send(SOCKET s, const char* buf, int len, int flags) {
-    int iResult = send(s, buf, len, flags); // Обмен данными по подключённому сокету
+    int iResult = send(s, buf, len, flags); // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
     if (iResult == SOCKET_ERROR) {
         printf("send failed with error: %d\n", WSAGetLastError());
         closesocket(s);
         WSACleanup();
         exit(1);
     }
-    printf("Bytes Sent: %ld\n", iResult);
+    printf("Bytes Sent: %d\n", iResult);
 }
 
 int Recv(SOCKET s, char* buf, int len, int flags) {
@@ -60,7 +60,7 @@ int Recv(SOCKET s, char* buf, int len, int flags) {
 }
 
 void Getaddrinfo(PCSTR pNode, PCSTR pService, const ADDRINFOA* pHints, PADDRINFOA* ppResult) {
-    int iResult = getaddrinfo(pNode, pService, pHints, ppResult); // Получения информации для содания сокета (ip + port) записываются в result
+    int iResult = getaddrinfo(pNode, pService, pHints, ppResult); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ (ip + port) пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ result
     if (iResult != 0) {
         printf("getaddrinfo failed with error: %d\n", iResult);
         WSACleanup();
@@ -68,8 +68,8 @@ void Getaddrinfo(PCSTR pNode, PCSTR pService, const ADDRINFOA* pHints, PADDRINFO
     }
 }
 
-void Bind(SOCKET s, addrinfo* info) {
-    int iResult = bind(s, info->ai_addr, (int)info->ai_addrlen); // Установка режима прослушивания tcp трафика на сокете
+void Bind(SOCKET s, ADDRINFO* info) {
+    int iResult = bind(s, info->ai_addr, (int)info->ai_addrlen); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ tcp пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
     if (iResult == SOCKET_ERROR) {
         printf("bind failed with error: %d\n", WSAGetLastError());
         freeaddrinfo(info);
@@ -80,7 +80,7 @@ void Bind(SOCKET s, addrinfo* info) {
 }
 
 void Listen(SOCKET s, int backlog) {
-    int iResult = listen(s, backlog); // Подключение к сокету для прослушивания (1 - макс очередь на поключение к сокету)
+    int iResult = listen(s, backlog); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (1 - пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ)
     if (iResult == SOCKET_ERROR) {
         printf("listen failed with error: %d\n", WSAGetLastError());
         closesocket(s);
@@ -90,10 +90,10 @@ void Listen(SOCKET s, int backlog) {
 }
 
 SOCKET Accept(SOCKET s) {
-    struct sockaddr_in client_socket; // Создание клиентской информационной структуры
+    struct sockaddr_in client_socket; // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     int sizeof_addr = sizeof(client_socket); // tmp 
 
-    SOCKET ClientSocket = accept(s, (sockaddr*)&client_socket, &sizeof_addr);
+    SOCKET ClientSocket = accept(s, (SOCKADDR*)&client_socket, &sizeof_addr);
     if (ClientSocket == INVALID_SOCKET) {
         printf("accept failed with error: %d\n", WSAGetLastError());
         closesocket(s);
