@@ -18,7 +18,7 @@
 
 #define DEFAULT_BUFLEN 4096
 #define DEFAULT_PORT "29015"
-#define INET_EXIT_STR "exit_ok"
+#define INET_EXIT_STR "exit\n"
 
 int __cdecl main(int argc, char** argv) {
     WSADATA wsaData; // Метаданные сетевых возможностей
@@ -89,7 +89,7 @@ int __cdecl main(int argc, char** argv) {
                 i -= 2;
                 printf("\n%s", sendbuf);
                 continue;
-            }
+            } 
             printf("%c", c);
         }
         Send(ConnectSocket, sendbuf, DEFAULT_BUFLEN, 0); // Обмен данными по подключённому сокету

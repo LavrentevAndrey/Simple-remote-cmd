@@ -108,3 +108,12 @@ SOCKET Accept(SOCKET s) {
     }
     return ClientSocket;
 }
+
+HANDLE SEM_init(int initial_count) {
+    HANDLE tmp = CreateSemaphore(NULL, initial_count, 1, NULL);
+    if (tmp == NULL) {
+        WSACleanup();
+        ErrorExit("Semaphore creation error\n");
+    }
+    return tmp;
+}
