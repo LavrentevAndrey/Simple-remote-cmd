@@ -142,8 +142,7 @@ int __cdecl main(void)
 
     if ( ! CloseHandle(g_hChildStd_IN_Wr) ) 
         ErrorExit(TEXT("StdInWr CloseHandle\n"));
-    if ( ! CloseHandle(g_hChildStd_IN_Rd) ) 
-        ErrorExit(TEXT("StdInRD CloseHandle\n"));
+    
     // cleanup
     closesocket(ClientSocket);
     WSACleanup();
@@ -242,6 +241,7 @@ DWORD WINAPI WriteToPipe(LPDWORD dummy)
         // Передаём управление чтению
         ReleaseSemaphore(g_hSem_Rd, 1, NULL);
     } while (strcmp(recvbuf, INET_EXIT_STR) != 0); // Условие правильного выхода
+    printf("EXIT\n");
     return S_OK;
 } 
  
@@ -273,6 +273,7 @@ DWORD WINAPI ReadFromPipe(LPDWORD dummy)
         // Передаём управление записи
         ReleaseSemaphore(g_hSem_Wr, 1, NULL);
     } while (strcmp(sendbuf, INET_EXIT_STR) != 0); // Условие правильного выхода
+    printf("EXIT\n");
     return S_OK;
 } 
  
