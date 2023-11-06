@@ -1,4 +1,4 @@
-# client_server_cmd_local
+# client_server
 ## Building
 - All libs are linked automaticly with msvc. If you want to use gcc you need to manualy link lib
   - gcc -Wextra -Wall client.c -lWs2_32 -o client
